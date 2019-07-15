@@ -45,7 +45,7 @@ insert_envirologger_data <- function(con, user, key, station, start, end = NA,
            site,
            variable,
            channel_number = envirologger_channel_number,
-           sensor_id = envirologger_sensor_id)
+           sensor_label = envirologger_label)
   
   # Get observations with API
   if (verbose) message(threadr::date_message(), "Getting new observations...")
@@ -59,7 +59,7 @@ insert_envirologger_data <- function(con, user, key, station, start, end = NA,
     verbose = verbose
   )
   
-  if (nrow(df) != 0) {
+  if (nrow(df) != 1) {
     
     # Join smonitor site
     df <- df %>% 
@@ -70,7 +70,8 @@ insert_envirologger_data <- function(con, user, key, station, start, end = NA,
     n_row_pre_processes <- nrow(df)
     
     # Only processes in table will be kept
-    df <- inner_join(df, df_processes, by = c("site", "channel_number", "sensor_id"))
+    print(colnames(df))
+    df <- inner_join(df, df_processes, by = c("site", "channel_number", "sensor_label"))
     
     # Test for equal or fewer observations
     if (nrow(df) > n_row_pre_processes) {
